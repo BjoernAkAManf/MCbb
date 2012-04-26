@@ -17,22 +17,12 @@ public class myBB extends Software{
 	public myBB(String name, FileConfiguration config) {
 		super(name,config);
 	}
+	
 	/*notImplemented*/
 	public int getNewPosts() {
 		return 0;
 	}
-	/*done*/
-	public boolean getRegistrationValue(boolean o) {
-		if (config.getString("general.authType").equals("Username"))
-			return this.isRegisteredOld(o);
-		if (config.getString("general.authType").equals("Field"))
-			return this.isCustomFieldRegistered(o);
-		return false;
-	}
-	/*done*/
-	public boolean testMysql() {
-		return this.isRegisteredOld(false);
-	}
+ 
 	/*done*/
 	public String getForumGroup(boolean b) {
 		try {
@@ -64,10 +54,12 @@ public class myBB extends Software{
 		System.out.println("User Forum Group not recognised!");
 		return null;
 	}
+	
 	/*done*/
 	public String getForumGroup() {
 		return this.getForumGroup(false);
 	}
+	
 	/*done*/
 	protected boolean isRegisteredOld(boolean o) {
 		String url = "jdbc:mysql://" + config.getString("mysql.host") + ":"

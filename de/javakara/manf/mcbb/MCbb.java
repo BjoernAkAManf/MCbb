@@ -20,7 +20,7 @@ import de.javakara.manf.util.Version;
 import org.bukkit.entity.Player;
 
 public class MCbb extends JavaPlugin {
-	final Version Version = new Version("1.9.0.1");
+	final Version Version = new Version("1.11.0.0");
 	public State ac;
 	public ArrayList<Player> grey = new ArrayList<Player>();
 	public static LocalisationUtility lang;

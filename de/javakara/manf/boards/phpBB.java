@@ -25,20 +25,6 @@ public class phpBB extends Software {
 	}
 
 	@Override
-	public boolean getRegistrationValue(boolean o) {
-		if (config.getString("general.authType").equals("Username"))
-			return isRegisteredOld(o);
-		if (config.getString("general.authType").equals("Field"))
-			return isCustomFieldRegistered(o);
-		return false;
-	}
-
-	@Override
-	public boolean testMysql() {
-		return isRegisteredOld(false);
-	}
-
-	@Override
 	public String getForumGroup(boolean b) {
 		try {
 			if (userId != 0) {

@@ -19,10 +19,11 @@ import de.javakara.manf.software.Software;
 		public void onPlayerLogin(PlayerLoginEvent event) {
 			if (plugin.ac == State.On) {
 				Software d;
-				d = ForumSoftware.getSoftwareObject(plugin.getConfig().getString("mysql.forumtyp"), event.getPlayer().getName(), plugin.getConfig());
+				d = ForumSoftware.getSoftwareObject(plugin.getConfig().getString("mysql.forumtype"), event.getPlayer().getName(), plugin.getConfig());
 				//d = new ForumUser(event.getPlayer().getName(), plugin.getConfig(),false);
 				if(!d.getRegistrationValue(false))
-					event.disallow(Result.KICK_OTHER, MCbb.lang.get("System.info.whitelist"));
+					event.setKickMessage(MCbb.lang.get("System.info.whitelist"));
+					event.setResult(Result.KICK_OTHER);
 			}
 		}
 }
