@@ -12,44 +12,26 @@
  * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
  *************************************************************************/
 
-package de.javakara.manf.util;
+package de.javakara.manf.database;
 
-import de.javakara.manf.mcbb.Updater;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class Version {
-	private int major, minor, patch, build;
-	public Version(String v) {
-		setV(v);
+public class MySQLManager {
+	private String url;
+	private Statement stmt;
+	
+	public MySQLManager(String host,String port,String db,String user,String pw) throws SQLException, ClassNotFoundException{ 
+		Class.forName("com.mysql.jdbc.Driver");
+		url = "jdbc:mysql://" + host + ":" + port + "/" + db;
+		Connection con = DriverManager.getConnection(url,user,pw);
+		stmt = con.createStatement();
 	}
-
-	public void setV(String v) {
-		String[] words = v.split("\\.");
-		major = Integer.parseInt(words[0]);
-		minor = Integer.parseInt(words[1]);
-		patch = Integer.parseInt(words[2]);
-		build = Integer.parseInt(words[3]);
-	}
-
-	public int getMajor() {
-		return major;
-	}
-	public int getMinor() {
-		return minor;
-	}
-	public int getPatch() {
-		return patch;
-	}
-	public int getBuild() {
-		return build;
-	}
-	@Override
-	public String toString()
-	{
-		return major + "." + minor + "." + patch + "." + build ;
-	}
-
-	public boolean isOutdated()
-	{
-		return !(this.toString().equals(Updater.getVersion()));
+	
+	public ResultSet executeQuery(String query) throws SQLException{
+		return stmt.executeQuery(query);
 	}
 }

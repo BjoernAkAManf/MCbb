@@ -1,42 +1,40 @@
+/**************************************************************************
+ * This file is part of MCbb.                                              
+ * MCbb is free software: you can redistribute it and/or modify            
+ * it under the terms of the GNU General Public License as published by    
+ * the Free Software Foundation, either version 3 of the License, or       
+ * (at your option) any later version.                                     
+ * MCbb is distributed in the hope that it will be useful,                 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           
+ * GNU General Public License for more details.                            
+ * You should have received a copy of the GNU General Public License       
+ * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
+ *************************************************************************/
+
 package de.javakara.manf.boards;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
 import de.javakara.manf.software.Software;
 
 public class XenForo extends Software {
-		public XenForo(String name, FileConfiguration config, boolean a) {
+		public XenForo(String name, FileConfiguration config, boolean a) throws SQLException, ClassNotFoundException {
 			super(name,config,a);
 		}
 		
-		public XenForo(String name, FileConfiguration config) {
+		public XenForo(String name, FileConfiguration config) throws SQLException, ClassNotFoundException {
 			super(name,config);
 		}
-		
-		@Override
-		public int getNewPosts() {
-			return 0;
-		}
-		
+				
 		@Override
 		public String getForumGroup(boolean b) {
 			try {
 				if (userId != 0) {
-					Class.forName("com.mysql.jdbc.Driver");
-					String url = "jdbc:mysql://" + config.getString("mysql.host")
-							+ ":" + config.getString("mysql.port") + "/"
-							+ config.getString("mysql.database");
-					Connection con = DriverManager.getConnection(url,
-							config.getString("mysql.user"),
-							config.getString("mysql.password"));
-					Statement stmt = con.createStatement();
-					ResultSet rs = stmt.executeQuery("SELECT servergroup FROM "
+					ResultSet rs = database.executeQuery("SELECT servergroup FROM "
 							+ this.config.getString("mysql.prefix")
 							+ "user_group WHERE user_group_id='" + userType + "'");
 					if (rs.next()) {
@@ -46,8 +44,6 @@ public class XenForo extends Software {
 				} else {
 					System.out.println("[MCbb] Sorry... Theres a fail in there!");
 				}
-			} catch (ClassNotFoundException e) {
-				System.out.println("ForumUserError: " + e.toString());
 			} catch (SQLException e) {
 				System.out.println("ForumUserError: " + e.toString());
 			}
@@ -55,32 +51,20 @@ public class XenForo extends Software {
 			System.out.println("User Forum Group not recognised!");
 			return null;
 		}
-		
+
 		@Override
-		public String getForumGroup() {
-			return this.getForumGroup(false);
+		public int getNewPosts() {
+			return 0;
 		}
 		
 		@Override
 		protected boolean isRegisteredOld(boolean o) {
-			String url = "jdbc:mysql://" + config.getString("mysql.host") + ":"
-			+ config.getString("mysql.port") + "/"
-			+ config.getString("mysql.database");
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				Connection con;
-				con = DriverManager.getConnection(url,
-						config.getString("mysql.user"),
-						config.getString("mysql.password"));
-				Statement stmt;
-				stmt = con.createStatement();
-				ResultSet rs;
-				String query = ("SELECT user_id,username,user_group_id FROM "
+				ResultSet rs = database.executeQuery("SELECT user_id,username,user_group_id FROM "
 						+ this.config.getString("mysql.prefix")
 						+ "user WHERE username="
 						+ "lower('" + name + "')"
 						+ " LIMIT 1");
-				rs = stmt.executeQuery(query);
 				
 				if (rs.next()) {
 					userId = rs.getInt("user_id");
@@ -93,9 +77,6 @@ public class XenForo extends Software {
 			} catch (SQLException e) {
 				System.out.println("Qwertzy2");
 				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				System.out.println("Qwertzy");
-				e.printStackTrace();
 			}
 			return false;
 		}
@@ -103,22 +84,14 @@ public class XenForo extends Software {
 		@Override
 		protected boolean isCustomFieldRegistered(boolean o) {
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				String url = "jdbc:mysql://" + config.getString("mysql.host") + ":"
-						+ config.getString("mysql.port") + "/"
-						+ config.getString("mysql.database");
-				Connection con = DriverManager.getConnection(url,
-						config.getString("mysql.user"),
-						config.getString("mysql.password"));
-				Statement stmt = con.createStatement();
-				ResultSet rs = stmt.executeQuery("SELECT user_id FROM "
+				ResultSet rs = database.executeQuery("SELECT user_id FROM "
 						+ this.config.getString("mysql.prefix")
 						+ "user_identity WHERE account_name='" + name
 						+ "' AND identity_service_id='" + this.config.getString("field.id")
 						+ "' LIMIT 1");
 				if (rs.next()) {
 					userId = rs.getInt("user_id");
-					rs = stmt.executeQuery("SELECT username,user_group_id,is_banned FROM "
+					rs = database.executeQuery("SELECT username,user_group_id,is_banned FROM "
 							+ this.config.getString("mysql.prefix")
 							+ "user WHERE user_id='" + userId + "' LIMIT 1");
 					if (rs.next()) {
@@ -132,5 +105,16 @@ public class XenForo extends Software {
 				e.printStackTrace();
 			}
 			return false;
+		}
+
+		@Override
+		public boolean isPasswordCorrect(String password) {
+			return false;
+		}
+
+		@Override
+		protected String getName() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 }

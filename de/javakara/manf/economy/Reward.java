@@ -11,45 +11,51 @@
  * You should have received a copy of the GNU General Public License       
  * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
  *************************************************************************/
+package de.javakara.manf.economy;
 
-package de.javakara.manf.util;
+import org.bukkit.entity.Player;
 
-import de.javakara.manf.mcbb.Updater;
-
-public class Version {
-	private int major, minor, patch, build;
-	public Version(String v) {
-		setV(v);
+public class Reward {
+	private RewardType type;
+	private double amount;
+	
+	public Reward(double amount){
+		this.type = RewardType.money;
+		this.amount = amount;
 	}
-
-	public void setV(String v) {
-		String[] words = v.split("\\.");
-		major = Integer.parseInt(words[0]);
-		minor = Integer.parseInt(words[1]);
-		patch = Integer.parseInt(words[2]);
-		build = Integer.parseInt(words[3]);
-	}
-
-	public int getMajor() {
-		return major;
-	}
-	public int getMinor() {
-		return minor;
-	}
-	public int getPatch() {
-		return patch;
-	}
-	public int getBuild() {
-		return build;
-	}
-	@Override
-	public String toString()
-	{
-		return major + "." + minor + "." + patch + "." + build ;
+	
+	public void earn(Player p){
+		switch(type){
+		case money:
+			EconomyManager.modifyPlayer(p.getName(), amount);
+			this.type = RewardType.none;
+			amount = 0;
+			return;
+		case item:
+			System.out.println("[MCbb] NotSupportedRewardException: Item is not Implemented for Rewards!");
+			return;
+		case rank:
+			System.out.println("[MCbb] NotSupportedRewardException: Rank is not Implemented for Rewards!");
+			return;
+		case none:
+			return;
+		}
 	}
 
-	public boolean isOutdated()
-	{
-		return !(this.toString().equals(Updater.getVersion()));
+	public static RewardType convertStringToType(String s) {
+		if(s.equalsIgnoreCase("m")){
+			return RewardType.money;
+		}
+		if(s.equalsIgnoreCase("i")){
+			return RewardType.item;
+		}
+		if(s.equalsIgnoreCase("r")){
+			return RewardType.rank;
+		}
+		return RewardType.none;
 	}
+}
+
+enum RewardType{
+	money,item,rank,none
 }

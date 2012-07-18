@@ -1,3 +1,17 @@
+/**************************************************************************
+ * This file is part of MCbb.                                              
+ * MCbb is free software: you can redistribute it and/or modify            
+ * it under the terms of the GNU General Public License as published by    
+ * the Free Software Foundation, either version 3 of the License, or       
+ * (at your option) any later version.                                     
+ * MCbb is distributed in the hope that it will be useful,                 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           
+ * GNU General Public License for more details.                            
+ * You should have received a copy of the GNU General Public License       
+ * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
+ *************************************************************************/
+
 package de.javakara.manf.util;
 
 import java.io.File;
@@ -48,7 +62,12 @@ public class LocalisationUtility {
 		val("System.update.location","http://exo-network.de/manf/index.php");
 		val("System.misc.enabled","[MCbb] loaded ->");
 		val("System.misc.disabled","[MCbb] unloaded ->");
-		
+		val("System.login.already","[MCbb] Your already logged in!");
+		val("System.login.wrongpw","[MCbb] Wrong Password");
+		val("System.login.pleaselogin","[MCbb] Please login! /login password");
+		val("System.login.onloginprocess","[MCbb] Sorry, but this Person is currently logging in");
+		val("System.login.wrongpw","[MCbb] Successfully logged in!");
+		val("System.command.noconsole","[MCbb] Im sorry! This command is not possible for non-Players");
 		System.out.println("[MCbb] Language Config Check sucessfull");
 		Saver.save(config,dataFolder + "/c.yml");
 	}

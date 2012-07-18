@@ -1,3 +1,17 @@
+/**************************************************************************
+ * This file is part of MCbb.                                              
+ * MCbb is free software: you can redistribute it and/or modify            
+ * it under the terms of the GNU General Public License as published by    
+ * the Free Software Foundation, either version 3 of the License, or       
+ * (at your option) any later version.                                     
+ * MCbb is distributed in the hope that it will be useful,                 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of          
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           
+ * GNU General Public License for more details.                            
+ * You should have received a copy of the GNU General Public License       
+ * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
+ *************************************************************************/
+
 package de.javakara.manf.mcbb;
 
 import java.io.IOException;
@@ -22,7 +36,7 @@ public class Updater {
 			in.close();
 			if(o){
 				System.out.println(MCbb.lang.get("System.update.version"));
-				System.out.println(MCbb.lang.get("System.update.currversion") + v.Version.toString());
+				System.out.println(MCbb.lang.get("System.update.currversion") + v.version.toString());
 				System.out.println(MCbb.lang.get("System.update.latestversion") + x.toString());
 			}
 		} catch (MalformedURLException me) {
@@ -31,7 +45,7 @@ public class Updater {
 		} catch (IOException ioe) {
 			System.err.println(ioe);
 		}
-		if(v.Version.toString().equals(x.toString()))
+		if(v.version.toString().equals(x.toString()))
 			return false;
 		else
 			return true;

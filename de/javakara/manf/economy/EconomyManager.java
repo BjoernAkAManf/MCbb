@@ -12,44 +12,30 @@
  * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
  *************************************************************************/
 
-package de.javakara.manf.util;
+package de.javakara.manf.economy;
 
-import de.javakara.manf.mcbb.Updater;
+import net.milkbowl.vault.economy.Economy;
 
-public class Version {
-	private int major, minor, patch, build;
-	public Version(String v) {
-		setV(v);
+public class EconomyManager {
+	private static Economy economy;
+	
+	public static void initialise(Economy economy){
+		EconomyManager.economy = economy;
 	}
-
-	public void setV(String v) {
-		String[] words = v.split("\\.");
-		major = Integer.parseInt(words[0]);
-		minor = Integer.parseInt(words[1]);
-		patch = Integer.parseInt(words[2]);
-		build = Integer.parseInt(words[3]);
+	
+	public static boolean isInitialised(){
+		return (economy != null);
 	}
-
-	public int getMajor() {
-		return major;
-	}
-	public int getMinor() {
-		return minor;
-	}
-	public int getPatch() {
-		return patch;
-	}
-	public int getBuild() {
-		return build;
-	}
-	@Override
-	public String toString()
-	{
-		return major + "." + minor + "." + patch + "." + build ;
+	public static void modifyPlayer(String playerName,double amount){
+		if(amount == 0.0){
+			return;
+		}
+		
+		if(amount > 0.0){
+			economy.depositPlayer(playerName, amount);
+		}else{
+			economy.withdrawPlayer(playerName, amount);
+		}
 	}
 
-	public boolean isOutdated()
-	{
-		return !(this.toString().equals(Updater.getVersion()));
-	}
 }
