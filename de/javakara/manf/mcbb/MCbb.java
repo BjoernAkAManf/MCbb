@@ -39,7 +39,7 @@ import de.javakara.manf.util.Version;
 import org.bukkit.entity.Player;
 
 public class MCbb extends JavaPlugin {
-	final Version version = new Version("1.12.0.0");
+	final Version version = new Version("2.0.0.0");
 	public State ac;
 	public ArrayList<Player> grey = new ArrayList<Player>();
 	public static LocalisationUtility lang;
@@ -126,7 +126,6 @@ public class MCbb extends JavaPlugin {
 	}
 	
 	private void addLoginListener(){
-		lPlayerListener.initialise(this.getConfig());
 		Bukkit.getServer().getPluginManager().registerEvents(lPlayerListener, this);
 	}
 	
@@ -184,8 +183,9 @@ public class MCbb extends JavaPlugin {
 	}
 	
 	private void testMySql() {
-		Software anonymous;
-		anonymous = ForumSoftware.getSoftwareObject(forumType, this.getConfig().getString("mysql.verifyuser"), this.getConfig());
+		ForumSoftware.init(getDataFolder() + "", forumType, "Forum", getConfig());
+		Software anonymous = ForumSoftware.getSoftwareObject();
+
 
 		if(anonymous.testMysql()){
 			System.out.println(lang.get("System.Validate.mysql.testedSucess"));

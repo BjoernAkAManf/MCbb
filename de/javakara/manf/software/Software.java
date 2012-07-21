@@ -21,18 +21,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import de.javakara.manf.database.MySQLManager;
 
 public abstract class Software {
-	protected String name;
 	protected FileConfiguration config;
-	protected int userType;
-	protected int userId;
-	protected int groupId;
-	protected String forumUserName;
 	protected MySQLManager database;
 	protected int authType;
-	
-	public Software(String name, FileConfiguration config, boolean a)
-			throws SQLException, ClassNotFoundException {
-		this.name = name.toLowerCase();
+
+	public void init(FileConfiguration config) throws SQLException, ClassNotFoundException{
 		this.config = config;
 		database = new MySQLManager(config.getString("mysql.host"),
 				config.getString("mysql.port"),
@@ -55,40 +48,31 @@ public abstract class Software {
 		authType = -1;
 	}
 
-	public Software(String name, FileConfiguration config) throws SQLException,
-			ClassNotFoundException {
-		this(name, config, false);
-	}
-
-	public String getForumGroup() {
-		return this.getForumGroup(false);
-	}
-
-	public boolean getRegistrationValue(boolean o) {
+	public boolean getRegistrationValue(User user) {
 		switch (authType) {
 		case 1:
-			return this.isRegisteredOld(o);
+			return this.isRegisteredOld(user);
 		case 2:
-			return this.isCustomFieldRegistered(o);
+			return this.isCustomFieldRegistered(user);
 		default:
 			return false;
 		}
 	}
 
 	public boolean testMysql() {
-		return this.isRegisteredOld(false);
+		return this.isRegisteredOld(new User(config.getString("mysql.verifyuser")));
 	}
 
 	public abstract int getNewPosts();
 
-	public abstract String getForumGroup(boolean b);
+	public abstract String getForumGroup(User user);
 
-	public abstract boolean isPasswordCorrect(String password);
+	public abstract boolean isPasswordCorrect(User user,String password);
 
 	protected abstract String getName();
 	
-	protected abstract boolean isRegisteredOld(boolean o);
+	protected abstract boolean isRegisteredOld(User user);
 
-	protected abstract boolean isCustomFieldRegistered(boolean o);
+	protected abstract boolean isCustomFieldRegistered(User user);
 
 }

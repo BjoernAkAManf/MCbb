@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 
 import de.javakara.manf.software.ForumSoftware;
 import de.javakara.manf.software.Software;
+import de.javakara.manf.software.User;
 
 public class MCbbCommands implements CommandExecutor {
 
@@ -54,11 +55,11 @@ public class MCbbCommands implements CommandExecutor {
 			if (args.length == 2) {
 				if (sender.hasPermission("mcbb.user.lookup")) {
 					if (args[0].equals("lookup")) {
-						Software x;
-						x = ForumSoftware.getSoftwareObject(plugin.getConfig().getString("mysql.forumtype"),args[1], plugin.getConfig());
-						//x = new ForumUser(args[1], plugin.getConfig());
+						Software x = ForumSoftware.getSoftwareObject();
+						User user = ForumSoftware.getUser(args[1]);
+						//x = new ForumUser(, plugin.getConfig());
 						// sender.sendMessage("Player Account Status: ");
-						if (x.getRegistrationValue(true)) {
+						if (x.getRegistrationValue(user)) {
 							sender.sendMessage("Active!");
 							return true;
 						}

@@ -23,6 +23,7 @@ import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.mcbb.State;
 import de.javakara.manf.software.ForumSoftware;
 import de.javakara.manf.software.Software;
+import de.javakara.manf.software.User;
 
 	public class WhitePlayerListener implements Listener {
 		public MCbb plugin;
@@ -34,8 +35,9 @@ import de.javakara.manf.software.Software;
 		 @EventHandler(priority = EventPriority.NORMAL)
 		public void onPlayerLogin(PlayerLoginEvent event) {
 			if (plugin.ac == State.On) {
-				Software d = ForumSoftware.getSoftwareObject(plugin.getConfig().getString("mysql.forumtype"), event.getPlayer().getName(), plugin.getConfig());				//d = new ForumUser(event.getPlayer().getName(), plugin.getConfig(),false);
-				if(!d.getRegistrationValue(false)){
+				User user = ForumSoftware.getUser(event.getPlayer().getName());
+				Software d = ForumSoftware.getSoftwareObject();
+				if(!d.getRegistrationValue(user)){
 					event.setKickMessage(MCbb.lang.get("System.info.whitelist"));
 					event.setResult(Result.KICK_OTHER);
 				}

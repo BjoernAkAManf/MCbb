@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -39,26 +38,13 @@ import org.bukkit.event.Listener;
 import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.software.ForumSoftware;
 import de.javakara.manf.software.Software;
+import de.javakara.manf.software.User;
 
 public class LoginPlayerListener implements Listener, CommandExecutor {
 	/** All Players that are secured */
 	private static ArrayList<String> protectedOnlinePlayers = new ArrayList<String>();
 	/** All Players that are logged in */
 	private static ArrayList<String> loggedInPlayers = new ArrayList<String>();
-	/** The ForumSoftware that is used*/
-	private static String forumSoftware;
-	/** The plugin config*/
-	private static FileConfiguration config;
-	
-	/**
-	 * Initialise the 'Login'-System
-	 * @param software the software used to 
-	 * @param config the plugin config
-	 */
-	public void initialise(FileConfiguration config){
-		LoginPlayerListener.config = config;
-		LoginPlayerListener.forumSoftware = config.getString("mysql.forumtype");
-	}
 	
 	/************
 	 * Saves the Player from beeing kicked by a 'Cracked Client'
@@ -105,8 +91,9 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 				if(args.length >= 1){
 					// Login Section
 					// Password check here
-					Software player = ForumSoftware.getSoftwareObject(forumSoftware, sender.getName(),config);
-					boolean passwordIsCorrect = player.isPasswordCorrect(args[0]);
+					Software software = ForumSoftware.getSoftwareObject();
+					User user = ForumSoftware.getUser(sender.getName());
+					boolean passwordIsCorrect = software.isPasswordCorrect(user,args[0]);
 					// Password check ended
 					// If password was correct add to loggedInPlayers
 					// If not kick the Player.

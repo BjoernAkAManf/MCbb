@@ -15,44 +15,47 @@
 package de.javakara.manf.software;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import de.javakara.manf.boards.XenForo;
-import de.javakara.manf.boards.myBB;
-import de.javakara.manf.boards.phpBB;
-import de.javakara.manf.boards.smf;
-import de.javakara.manf.boards.vBulletin;
-
 public class ForumSoftware {
-	public static Software getSoftwareObject(String software,String playername,
-													FileConfiguration config) {
-		if (software != null) {
-			try {
-				if (software.equalsIgnoreCase("phpbb")) {
-					return new phpBB(playername, config);
+	private static Software software;
+	private static String pluginFolder,softwareName,type;
+	private static FileConfiguration config;
+	private static HashMap<String, User> users = new HashMap<String,User>();
+	
+	public static void init(String pluginFolder,String softwareName,String type,FileConfiguration config){
+		ForumSoftware.pluginFolder = pluginFolder;
+		ForumSoftware.softwareName = softwareName;
+		ForumSoftware.type = type;
+		ForumSoftware.config = config;
+	}
+	
+	public static Software getSoftwareObject(){
+		if(software == null){
+			software = PluginManager.load(pluginFolder, softwareName, type);
+			if(software == null){
+				System.out.println("ForumSoftware not Found!");
+				System.out.println("Be aware the Name of the Jar needs to be:!");
+				System.out.println("NameOfTheSoftware-type.jar");
+			}else{
+				try {
+					software.init(config);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-				if (software.equalsIgnoreCase("mybb")) {
-					return new myBB(playername, config);
-				}
-				if (software.equalsIgnoreCase("smf")) {
-					return new smf(playername, config);
-				}
-				if (software.equalsIgnoreCase("XenForo")) {
-					return new XenForo(playername, config);
-				}
-				if (software.equalsIgnoreCase("vBulletin")) {
-					return new vBulletin(playername, config);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
-			System.out.println("ForumSoftware not Found!");
-			return null;
 		}
-		System.out.println("Error while enabling Software!");
-		return null;
+		return software;
+	}
+	
+	public static User getUser(String name){
+		if(users.containsKey(name)){
+			users.put(name, new User(name));
+		}
+		return users.get(name);
 	}
 }

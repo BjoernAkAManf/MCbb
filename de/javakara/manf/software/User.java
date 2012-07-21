@@ -14,34 +14,39 @@
 
 package de.javakara.manf.software;
 
-import java.io.File;
+public class User {
+	private int id,type,gid;
+	private String name;
+	
+	public User(String name) {
+		this.name = name;
+	}
 
-import de.javakara.manf.util.pluginloader.JarClassLoader;
+	public int getId() {
+		return id;
+	}
+	
+	public String getName() {
+		return name;
+	}
 
-public final class PluginManager {
-	public static Software load(String pluginFolder, String softwareName,String type) {
-		
-		JarClassLoader jarLoader = new JarClassLoader(pluginFolder
-				+ File.separator + softwareName + "-" + type +".jar");
-		Class<?> c = null;
-		try {
-			c = jarLoader.loadClass(softwareName, true);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		Object o = null;
-		try {
-			o = c.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		Software software = null;
-		if (o instanceof Software) {
-			software = (Software) o;
-			System.out.println(software.getName() + "found and used");
-		}
-		return software;
+	public int getGroupId() {
+		return gid;
+	}
+	
+	public int getTypeId() {
+		return type;
+	}
+	
+	public void setGroupId(int gid) {
+		this.gid = gid;
+	}
+
+	public void setUserType(int type) {
+		this.type = type;
+	}
+
+	public void setUserId(int id) {
+		this.id = id;
 	}
 }

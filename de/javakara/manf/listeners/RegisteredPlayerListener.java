@@ -23,6 +23,7 @@ import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.mcbb.State;
 import de.javakara.manf.software.ForumSoftware;
 import de.javakara.manf.software.Software;
+import de.javakara.manf.software.User;
 
 
 	public class RegisteredPlayerListener implements Listener {
@@ -35,23 +36,23 @@ import de.javakara.manf.software.Software;
 		//@ToDo(task = "Change EconomyManager to Correct values")
 		@EventHandler(priority = EventPriority.NORMAL)
 		public void onPlayerJoin(PlayerJoinEvent event) {
-			Software u;
-			u = ForumSoftware.getSoftwareObject(plugin.getConfig().getString("mysql.forumtype"), event.getPlayer().getName(), plugin.getConfig());
-			if(u.getRegistrationValue(true)){
+			Software u = ForumSoftware.getSoftwareObject();
+			User user = ForumSoftware.getUser(event.getPlayer().getName());
+			if(u.getRegistrationValue(user)){
 				if(plugin.ac == State.On)
 					if(MCbb.permission != null)
 						System.out.println("Starting SQL-GroupSync");
-						if(plugin.getConfig().getString("general.syncGroups").equals("true"))
-							if(!(MCbb.permission.playerInGroup((String)null, event.getPlayer().getName(), u.getForumGroup()))){
-								p(event.getPlayer(),u.getForumGroup());
-								event.getPlayer().sendMessage("[MCbb] Your Group was set to: " +  u.getForumGroup());
+						if(plugin.getConfig().getString("general.syncGroups").equals("true")){
+							String forumGroup = u.getForumGroup(user);
+							if(!(MCbb.permission.playerInGroup((String)null, event.getPlayer().getName(), forumGroup))){
+								p(event.getPlayer(),forumGroup);
+								event.getPlayer().sendMessage("[MCbb] Your Group was set to: " +  forumGroup);
 							}
+						}
 					//if(EconomyManager.isInitialised())
 					//	EconomyManager.modifyPlayer(event.getPlayer().getName(), (u.getNewPosts() * plugin.getConfig().getInt("economy.moneyPerPost")));
 				info(event.getPlayer());
 			}
-			else
-				plugin.grey.add(event.getPlayer());
 			if(!(event.getPlayer().hasPermission("mcbb.user.join") || event.getPlayer().hasPermission("mcbb.vip.override"))){
 				event.getPlayer().kickPlayer(MCbb.lang.get("System.error.noPerm"));
 			}
