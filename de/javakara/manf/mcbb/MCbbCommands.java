@@ -17,10 +17,12 @@ package de.javakara.manf.mcbb;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
-import de.javakara.manf.software.User;
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
+import de.javakara.manf.api.User;
+import de.javakara.manf.listeners.LoginPlayerListener;
 
 public class MCbbCommands implements CommandExecutor {
 
@@ -32,46 +34,50 @@ public class MCbbCommands implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,String label, String[] args) {
-		if (args.length == 0)
-			return sendHelp(sender);
-		if (args.length == 1) {
-			if (args[0].equals("on"))
-				if (sender.hasPermission("mcbb.maintainer.on")) {
-					return plugin.setOn();
-				} else
-					return permError(sender);
-			if (args[0].equals("off"))
-				if (sender.hasPermission("mcbb.maintainer.off")) {
-					return plugin.setOff();
-				} else
-					return permError(sender);
-			if (args[0].equals("status"))
-				if (sender.hasPermission("mcbb.maintainer.status")) {
-					return plugin.status(sender);
-				} else
-					return permError(sender);
-		}
-		if (plugin.ac == State.On) {
-			if (args.length == 2) {
-				if (sender.hasPermission("mcbb.user.lookup")) {
-					if (args[0].equals("lookup")) {
-						Software x = ForumSoftware.getSoftwareObject();
-						User user = ForumSoftware.getUser(args[1]);
-						//x = new ForumUser(, plugin.getConfig());
-						// sender.sendMessage("Player Account Status: ");
-						if (x.getRegistrationValue(user)) {
-							sender.sendMessage("Active!");
+		if(label.equalsIgnoreCase("mcbb")){
+			if (args.length == 0)
+				return sendHelp(sender);
+			if (args.length == 1) {
+				if (args[0].equals("on"))
+					if (sender.hasPermission("mcbb.maintainer.on")) {
+						return plugin.setOn();
+					} else
+						return permError(sender);
+				if (args[0].equals("off"))
+					if (sender.hasPermission("mcbb.maintainer.off")) {
+						return plugin.setOff();
+					} else
+						return permError(sender);
+				if (args[0].equals("status"))
+					if (sender.hasPermission("mcbb.maintainer.status")) {
+						return plugin.status(sender);
+					} else
+						return permError(sender);
+			}
+			if (plugin.ac == State.On) {
+				if (args.length == 2) {
+					if (sender.hasPermission("mcbb.user.lookup")) {
+						if (args[0].equals("lookup")) {
+							Software x = ForumSoftware.getSoftwareObject();
+							User user = ForumSoftware.getUser(args[1]);
+							//x = new ForumUser(, plugin.getConfig());
+							// sender.sendMessage("Player Account Status: ");
+							if (x.getRegistrationValue(user)) {
+								sender.sendMessage("Active!");
+								return true;
+							}
+							sender.sendMessage("Inactive!");
 							return true;
 						}
-						sender.sendMessage("Inactive!");
-						return true;
-					}
-				} else
-					return permError(sender);
+					} else
+						return permError(sender);
+				}
+				sender.sendMessage("Unknown Command");
 			}
-			sender.sendMessage("Unknown Command");
-		}
-		return sendHelp(sender);
+			return sendHelp(sender);
+		}else{
+			return LoginPlayerListener.loginCommand((Player) sender, label, args);
+		}	
 	}
 	
 

@@ -27,11 +27,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.Listener;
 
+import de.javakara.manf.api.Config;
+import de.javakara.manf.api.ConfigItems;
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
+import de.javakara.manf.api.User;
 import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.mcbb.State;
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
-import de.javakara.manf.software.User;
 
 public class GreyPlayerListener implements Listener {
 	public MCbb plugin;
@@ -43,10 +45,10 @@ public class GreyPlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (plugin.ac == State.On) {
-			System.out.println(plugin.getConfig().getString("mysql.forumtype"));
 			User user = ForumSoftware.getUser(event.getPlayer().getName());
 
 			Software software = ForumSoftware.getSoftwareObject();
+			System.out.println(Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_LOOTITEMS));
 			if (software.getRegistrationValue(user)) {
 				System.out.println((MCbb.lang.get("System.info.auth"))
 						.replaceAll("<player>", event.getPlayer().getName()));
@@ -59,9 +61,7 @@ public class GreyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (plugin.getConfig()
-				.getString("general.greylist.protection.lootItems")
-				.equals("true"))
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_LOOTITEMS))
 			if (plugin.grey.contains(event.getPlayer())
 					&& plugin.ac == State.On
 					&& !(event.getPlayer().hasPermission("mcbb.vip.override")))
@@ -70,9 +70,7 @@ public class GreyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (plugin.getConfig()
-				.getString("general.greylist.protection.dropItems")
-				.equals("true"))
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_DROPITEMS))
 			if (plugin.grey.contains(event.getPlayer())
 					&& plugin.ac == State.On
 					&& !(event.getPlayer().hasPermission("mcbb.vip.override"))) {
@@ -84,8 +82,7 @@ public class GreyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChat(PlayerChatEvent event) {
-		if (plugin.getConfig().getString("general.greylist.protection.chat")
-				.equals("true"))
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_CHAT))
 			if (plugin.grey.contains(event.getPlayer())
 					&& plugin.ac == State.On
 					&& !(event.getPlayer().hasPermission("mcbb.vip.override"))) {
@@ -97,22 +94,17 @@ public class GreyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (plugin.getConfig()
-				.getString("general.greylist.protection.interact")
-				.equals("true"))
-			if (plugin.grey.contains(event.getPlayer())
-					&& plugin.ac == State.On
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_INTERACT))
+			if (plugin.grey.contains(event.getPlayer()) && plugin.ac == State.On
 					&& !(event.getPlayer().hasPermission("mcbb.vip.override"))) {
-				event.getPlayer().sendMessage(
-						MCbb.lang.get("System.info.registerFirst"));
+				event.getPlayer().sendMessage(MCbb.lang.get("System.info.registerFirst"));
 				event.setCancelled(true);
 			}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (plugin.getConfig().getString("general.greylist.protection.command")
-				.equals("true"))
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_COMMAND))
 			if (plugin.grey.contains(event.getPlayer())
 					&& plugin.ac == State.On
 					&& !(event.getPlayer().hasPermission("mcbb.vip.override"))) {
@@ -124,22 +116,16 @@ public class GreyPlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (plugin.getConfig()
-				.getString("general.greylist.protection.damageEntities")
-				.equals("true"))
+		if (Config.getBoolean(ConfigItems.GENERAL_GREYLIST_PROTECTION_DAMAGEENTITIES))
 			if (plugin.ac == State.On) {
-				if (!(plugin.getConfig()
-						.getBoolean("general.greylist.protection.damageEntities")))
-					if (event.getCause().equals(
-							EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
+				System.out.println(event.getCause());
+					if (event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
 						EntityDamageByEntityEvent ed = (EntityDamageByEntityEvent) event;
 						Player p;
 						if (ed.getDamager() instanceof Player) {
 							p = (Player) ed.getDamager();
-							if (plugin.grey.contains(p)
-									&& !(p.hasPermission("mcbb.vip.override"))) {
-								p.sendMessage(MCbb.lang
-										.get("System.info.registerFirst"));
+							if (plugin.grey.contains(p)	&& !(p.hasPermission("mcbb.vip.override"))) {
+								p.sendMessage(MCbb.lang.get("System.info.registerFirst"));
 								event.setCancelled(true);
 							}
 						}

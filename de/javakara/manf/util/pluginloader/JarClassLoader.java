@@ -8,10 +8,13 @@ public class JarClassLoader extends MultiClassLoader {
 		jarResources = new JarResources(jarName);
 	}
 
+	@Override
 	protected byte[] loadClassBytes(String className) {
 		// Support the MultiClassLoader's class name munging facility.
 		className = formatClassName(className);
 		// Attempt to get the class data from the JarResource.
 		return (jarResources.getResource(className));
 	}
+	
+
 }

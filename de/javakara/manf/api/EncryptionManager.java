@@ -12,7 +12,7 @@
  * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
  *************************************************************************/
 
-package de.javakara.manf.util;
+package de.javakara.manf.api;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;

@@ -36,7 +36,7 @@ public class Updater {
 			in.close();
 			if(o){
 				System.out.println(MCbb.lang.get("System.update.version"));
-				System.out.println(MCbb.lang.get("System.update.currversion") + v.version.toString());
+				System.out.println(MCbb.lang.get("System.update.currversion") + MCbb.getFullVersion());
 				System.out.println(MCbb.lang.get("System.update.latestversion") + x.toString());
 			}
 		} catch (MalformedURLException me) {
@@ -45,11 +45,12 @@ public class Updater {
 		} catch (IOException ioe) {
 			System.err.println(ioe);
 		}
-		if(v.version.toString().equals(x.toString()))
+		if(MCbb.getFullVersion().toString().equals(x.toString()))
 			return false;
 		else
 			return true;
 	}
+	
 	public static String getVersion() {
 		StringBuilder x = new StringBuilder();
 		try {

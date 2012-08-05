@@ -12,36 +12,33 @@
  * along with MCbb.  If not, see <http://www.gnu.org/licenses/>.           
  *************************************************************************/
 
-package de.javakara.manf.software;
+package de.javakara.manf.api;
 
 import java.sql.SQLException;
-
-import org.bukkit.configuration.file.FileConfiguration;
 
 import de.javakara.manf.database.MySQLManager;
 
 public abstract class Software {
-	protected FileConfiguration config;
 	protected MySQLManager database;
 	protected int authType;
 
-	public void init(FileConfiguration config) throws SQLException, ClassNotFoundException{
-		this.config = config;
-		database = new MySQLManager(config.getString("mysql.host"),
-				config.getString("mysql.port"),
-				config.getString("mysql.database"),
-				config.getString("mysql.user"),
-				config.getString("mysql.password"));
+	public void init() throws SQLException, ClassNotFoundException{
+		database = new MySQLManager(Config.getString(ConfigItems.MYSQL_HOST),
+				Config.getString(ConfigItems.MYSQL_PORT),
+				Config.getString(ConfigItems.MYSQL_DATABASE),
+				Config.getString(ConfigItems.MYSQL_USER),
+				Config.getString(ConfigItems.MYSQL_PASSWORD));
 		setAuthTyp();
+		System.out.println("Using: " + Config.getString(ConfigItems.AUTH_TYPE) + "for AuthType");
 	}
 
 	private void setAuthTyp() {
-		if (config.getString("general.authType").equals("Username")) {
+		if (Config.getString(ConfigItems.AUTH_TYPE).equals("Username")) {
 			authType = 0;
 			return;
 		}
 
-		if (config.getString("general.authType").equals("Field")) {
+		if (Config.getString(ConfigItems.AUTH_TYPE).equals("Field")) {
 			authType = 1;
 			return;
 		}
@@ -50,9 +47,9 @@ public abstract class Software {
 
 	public boolean getRegistrationValue(User user) {
 		switch (authType) {
-		case 1:
+		case 0:
 			return this.isRegisteredOld(user);
-		case 2:
+		case 1:
 			return this.isCustomFieldRegistered(user);
 		default:
 			return false;
@@ -60,7 +57,7 @@ public abstract class Software {
 	}
 
 	public boolean testMysql() {
-		return this.isRegisteredOld(new User(config.getString("mysql.verifyuser")));
+		return this.isRegisteredOld(new User(Config.getString(ConfigItems.MYSQL_VERIFYUSER)));
 	}
 
 	public abstract int getNewPosts();

@@ -19,11 +19,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
+import de.javakara.manf.api.User;
 import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.mcbb.State;
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
-import de.javakara.manf.software.User;
 
 	public class WhitePlayerListener implements Listener {
 		public MCbb plugin;

@@ -14,7 +14,6 @@
 
 package de.javakara.manf.mcbb;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import net.milkbowl.vault.economy.Economy;
@@ -25,22 +24,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.javakara.manf.api.Config;
+import de.javakara.manf.api.ConfigItems;
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
 import de.javakara.manf.economy.EconomyManager;
 import de.javakara.manf.listeners.GreyPlayerListener;
 import de.javakara.manf.listeners.LoginPlayerListener;
 import de.javakara.manf.listeners.RegisteredPlayerListener;
 import de.javakara.manf.listeners.WhitePlayerListener;
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
 import de.javakara.manf.util.LocalisationUtility;
-import de.javakara.manf.util.Saver;
 import de.javakara.manf.util.Version;
 
 import org.bukkit.entity.Player;
 
 public class MCbb extends JavaPlugin {
-	final Version version = new Version("2.0.0.0");
-	public State ac;
+	final static Version version = new Version("2.0.0.0");
+	public State ac = State.Off;
 	public ArrayList<Player> grey = new ArrayList<Player>();
 	public static LocalisationUtility lang;
 	private final GreyPlayerListener gPlayerListener = new GreyPlayerListener(this);
@@ -52,7 +52,7 @@ public class MCbb extends JavaPlugin {
     public static Permission permission = null;
     public static State debug;
     public static String forumType;
-	
+       
     @Override
 	public void onEnable() {
 		debug = State.Off;
@@ -67,17 +67,14 @@ public class MCbb extends JavaPlugin {
 		}
 		lang = new LocalisationUtility(this);
 		System.out.println(lang.get("System.misc.enabled") + version);
-		if (!(new File(getDataFolder() + "/c.yml").exists()))
-			save();
 		loadConfig();
-		validateConfig();
 		testMySql();
 		
-		if(this.getConfig().getString("general.type").equals("Greylist")){
+		if(Config.getString(ConfigItems.GENERAL_TYPE).equals("Greylist")){
 			addGreyListeners();
 			System.out.println(lang.get("System.info.greyActivated"));
 		}
-		else if(this.getConfig().getString("general.type").equals("Whitelist")){
+		else if(Config.getString(ConfigItems.GENERAL_TYPE).equals("Whitelist")){
 			addWhiteListeners();
 			System.out.println(lang.get("System.info.whiteActivated"));
 		}
@@ -86,7 +83,7 @@ public class MCbb extends JavaPlugin {
 			this.getPluginLoader().disablePlugin(this);
 		}
 		
-		if(this.getConfig().getString("sec.login.on").equals("true")){
+		if(Config.getBoolean(ConfigItems.AUTH_LOGIN_ENABLED)){
 			addLoginListener();
 		}
 		
@@ -129,61 +126,16 @@ public class MCbb extends JavaPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(lPlayerListener, this);
 	}
 	
-	private void validateConfig(){
-		System.out.println(lang.get("System.Validate.start"));
-		val("mysql.forumtype", "phpbb");
-		val("mysql.verifyuser", "anonymous");
-		val("mysql.host", "localhost");
-		val("mysql.port", "3306");
-		val("mysql.user", "root");
-		val("mysql.password", "test");
-		val("mysql.database", "mc");
-		val("mysql.prefix", "phpbb3_");
-		val("general.type", "Greylist");//Greylist , Whitelist
-		val("general.authType", "Field");//Field , Username 
-		val("field.id","1");
-		val("general.syncGroups","false");
-		val("general.greylist.protection.damageEntities", "true"); //true , false
-		val("general.greylist.protection.lootItems", "true"); //true , false
-		val("general.greylist.protection.dropItems", "true"); //true , false
-		val("general.greylist.protection.chat", "true"); //true , false
-		val("general.greylist.protection.interact", "true"); //true , false
-		val("general.greylist.protection.command", "true"); //true , false
-		val("economy.reward", new String[] {"1|M|100","2|M|200"});
-		
-		val("sec.login.on","false"); //true, false
-		System.out.println(lang.get("System.Validate.confSucess"));
-		save();
-	}
-	
-	private void val(String node,String defaultValue){
-		if(this.getConfig().getString(node) == null){
-			if(lang.get("System.Validate." + node) != null)
-				System.out.println(lang.get("System.Validate." + node));
-			else
-				lang.get("[MCbb] Err 3: Unknown Lang-NodeValidation: " + node);
-			this.getConfig().set(node, defaultValue);	
-		}
-	}
-	
-	private void val(String node, String[] defaultValue){
-		if(this.getConfig().getStringList(node) == null){
-			if(lang.get("System.Validate." + node) != null)
-				System.out.println(lang.get("System.Validate." + node));
-			else
-				lang.get("[MCbb] Err 3: Unknown Lang-NodeValidation: " + node);
-			this.getConfig().set(node, defaultValue);	
-		}	
-	}
-	
 	private void registerCommands(){
 		MCbbExc = new MCbbCommands(this);
 		getCommand("mcbb").setExecutor(MCbbExc);
+		getCommand("login").setExecutor(MCbbExc);
+		getCommand("logout").setExecutor(MCbbExc);
 		ac = State.On;
 	}
 	
 	private void testMySql() {
-		ForumSoftware.init(getDataFolder() + "", forumType, "Forum", getConfig());
+		ForumSoftware.init(getDataFolder() + "", forumType, "Forum");
 		Software anonymous = ForumSoftware.getSoftwareObject();
 
 
@@ -193,8 +145,8 @@ public class MCbb extends JavaPlugin {
 	}
 
 	private void loadConfig() {
-		Saver.load(this.getConfig(), lang, this.getDataFolder());
-		forumType = this.getConfig().getString("mysql.forumtype");
+		Config.initialise(getConfig(), lang, getDataFolder());
+		forumType = Config.getString("mysql.forumtype");
 		System.out.println("ForumType: " + forumType);
 	}
 	
@@ -228,10 +180,15 @@ public class MCbb extends JavaPlugin {
 	}
 	
 	public boolean isOutdated(){
-		return version.isOutdated();
+		//return version.isOutdated();
+		return false;
 	}
-	
-	public void save() {
-		Saver.save(this.getConfig(),getDataFolder() + "/c.yml");
+
+	public static int getVersion() {
+		return version.getMajor();
+	}
+
+	public static Version getFullVersion() {
+		return version;
 	}	
 }

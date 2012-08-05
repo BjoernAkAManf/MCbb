@@ -19,11 +19,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import de.javakara.manf.api.Config;
+import de.javakara.manf.api.ConfigItems;
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
+import de.javakara.manf.api.User;
 import de.javakara.manf.mcbb.MCbb;
 import de.javakara.manf.mcbb.State;
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
-import de.javakara.manf.software.User;
 
 
 	public class RegisteredPlayerListener implements Listener {
@@ -42,7 +44,7 @@ import de.javakara.manf.software.User;
 				if(plugin.ac == State.On)
 					if(MCbb.permission != null)
 						System.out.println("Starting SQL-GroupSync");
-						if(plugin.getConfig().getString("general.syncGroups").equals("true")){
+						if(Config.getBoolean(ConfigItems.SYNCGROUPS_ENABLED)){
 							String forumGroup = u.getForumGroup(user);
 							if(!(MCbb.permission.playerInGroup((String)null, event.getPlayer().getName(), forumGroup))){
 								p(event.getPlayer(),forumGroup);

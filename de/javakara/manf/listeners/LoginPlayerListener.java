@@ -16,9 +16,6 @@ package de.javakara.manf.listeners;
 
 import java.util.ArrayList;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -35,12 +32,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import de.javakara.manf.api.ForumSoftware;
+import de.javakara.manf.api.Software;
+import de.javakara.manf.api.User;
 import de.javakara.manf.mcbb.MCbb;
-import de.javakara.manf.software.ForumSoftware;
-import de.javakara.manf.software.Software;
-import de.javakara.manf.software.User;
 
-public class LoginPlayerListener implements Listener, CommandExecutor {
+public class LoginPlayerListener implements Listener {
 	/** All Players that are secured */
 	private static ArrayList<String> protectedOnlinePlayers = new ArrayList<String>();
 	/** All Players that are logged in */
@@ -73,51 +70,9 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void playerLeaves(PlayerQuitEvent event) {
 		protectedOnlinePlayers.remove(event.getPlayer().getName());
+		loggedInPlayers.remove(event.getPlayer().getName());
 	}
-
-	/**
-	 * Manages the Command for Login/Logout
-	 */
-	@Override
-	public boolean onCommand(CommandSender sender, Command command,String label, String[] args) {
-		Player p = null;
-		p = (Player) sender;
-		// If Player is null we can exit
-		// Only Player can 'Login'/'Logout'
-		if (p != null) {
-			// Splits commands into 'Login'/'Logout' section
-			if (label.equals("login")) {
-				//needs atleast one Arguement(Password)
-				if(args.length >= 1){
-					// Login Section
-					// Password check here
-					Software software = ForumSoftware.getSoftwareObject();
-					User user = ForumSoftware.getUser(sender.getName());
-					boolean passwordIsCorrect = software.isPasswordCorrect(user,args[0]);
-					// Password check ended
-					// If password was correct add to loggedInPlayers
-					// If not kick the Player.
-					if (passwordIsCorrect) {
-						// Adds Player to ArrayList
-						loggedInPlayers.add(sender.getName());
-						sender.sendMessage(MCbb.lang.get("System.login.success"));
-					} else {
-						// Kicks the Player
-						p.kickPlayer(MCbb.lang.get("System.login.wrongpw"));
-					}
-				}
-			} else if (label.equals("logout")) {
-				// Logout Section
-				loggedInPlayers.remove(sender.getName());
-			}
-			return true;
-		} else {
-			// Console cannot 'Login'/'Logout'
-			System.out.println(MCbb.lang.get("System.command.noconsole"));
-			return false;
-		}
-	}
-
+	
 	/**********************************************************************
 	 * This event guarantee that player inventories cannot modified if the
 	 * player is not logged in. Here item pickup
@@ -184,7 +139,7 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void playerTriesCommandEvent(PlayerCommandPreprocessEvent event) {
 		Player p = event.getPlayer();
-		if (!loggedInPlayers.contains(p.getName())) {
+		if (!(event.getMessage().startsWith("/login") ^ loggedInPlayers.contains(p.getName()))) {
 			p.sendMessage(MCbb.lang.get("System.login.pleaselogin"));
 			event.setCancelled(true);
 		}
@@ -204,7 +159,7 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 			if (ed.getDamager() instanceof Player) {
 				damager = (Player) ed.getDamager();
 				// Is the Damaging Player logged in?
-				if (loggedInPlayers.contains(damager.getName())) {
+				if (!loggedInPlayers.contains(damager.getName())) {
 					// Cancel damage, because player is not logged in
 					damager.sendMessage(MCbb.lang
 							.get("System.login.pleaselogin"));
@@ -215,7 +170,7 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 			Player victim = null;
 			if (ed.getEntity() instanceof Player) {
 				victim = (Player) ed.getEntity();
-				if (loggedInPlayers.contains(victim.getName())) {
+				if (!loggedInPlayers.contains(victim.getName())) {
 					if (damager != null) {
 						// Notifies damager if victim is logggin in
 						damager.sendMessage(MCbb.lang
@@ -225,6 +180,43 @@ public class LoginPlayerListener implements Listener, CommandExecutor {
 					return;
 				}
 			}
+		}
+	}
+	
+	public static boolean loginCommand(Player p, String label,String[] args){
+		// If Player is null we can exit
+		// Only Player can 'Login'/'Logout'
+		if (p != null) {
+			// Splits commands into 'Login'/'Logout' section
+			if (label.equals("login")) {
+				//needs atleast one Arguement(Password)
+				if(args.length >= 1){
+					// Login Section
+					// Password check here
+					Software software = ForumSoftware.getSoftwareObject();
+					User user = ForumSoftware.getUser(p.getName());
+					boolean passwordIsCorrect = software.isPasswordCorrect(user,args[0]);
+					// Password check ended
+					// If password was correct add to loggedInPlayers
+					// If not kick the Player.
+					if (passwordIsCorrect) {
+						// Adds Player to ArrayList
+						loggedInPlayers.add(p.getName());
+						p.sendMessage(MCbb.lang.get("System.login.success") + "");
+					} else {
+						// Kicks the Player
+						p.kickPlayer(MCbb.lang.get("System.login.wrongpw"));
+					}
+				}
+			} else if (label.equals("logout")) {
+				// Logout Section
+				loggedInPlayers.remove(p.getName());
+			}
+			return true;
+		} else {
+			// Console cannot 'Login'/'Logout'
+			System.out.println(MCbb.lang.get("System.command.noconsole"));
+			return false;
 		}
 	}
 }

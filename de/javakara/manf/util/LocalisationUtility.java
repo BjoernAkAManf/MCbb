@@ -87,7 +87,7 @@ public class LocalisationUtility {
 	private void load(FileConfiguration fc) {
 		System.out.println("[MCbb] Loading Language");
 		try {
-			fc.load(dataFolder + "/c.yml");
+			fc.load(dataFolder + "/config.yml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -2,6 +2,7 @@ package de.javakara.manf.util.pluginloader;
 
 import java.util.Hashtable;
 
+
 /**
  * A simple test class loader capable of loading from multiple sources, such as
  * local files or a URL.
@@ -13,8 +14,11 @@ import java.util.Hashtable;
  * Note that this has been updated to use the non-deprecated version of
  * defineClass() -- JDM.
  * 
+ * Added Support for API Classes for MCbb - BRH
+ * 
  * @author Jack Harich - 8/18/97
  * @author John D. Mitchell - 99.03.04
+ * @author Björn R. Heinrichs - 28.07.12
  */
 public abstract class MultiClassLoader extends ClassLoader {
 
@@ -22,7 +26,7 @@ public abstract class MultiClassLoader extends ClassLoader {
 	private Hashtable<String, Class<?>> classes = new Hashtable<String, Class<?>>();
 	private char classNameReplacementChar;
 
-	protected boolean monitorOn = false;
+	protected boolean monitorOn = true;
 	protected boolean sourceMonitorOn = true;
 
 	// ---------- Initialization ------------------------------
@@ -119,5 +123,9 @@ public abstract class MultiClassLoader extends ClassLoader {
 	protected static void print(String text) {
 		System.out.println(text);
 	}
-
+	
+	public void addApiClass(String name, Class<?> c){
+		monitor(">> Added ApiClass: " + name + "|" + c);
+		classes.put(name, c);
+	}
 } // End class

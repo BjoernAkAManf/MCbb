@@ -18,16 +18,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+
+import de.javakara.manf.api.Config;
+import de.javakara.manf.api.ConfigItems;
 
 public class PostEconomyManager {
 	private HashMap<String,Integer> posts = new HashMap<String,Integer>();
 	private ArrayList<Reward> rewards = new ArrayList<Reward>();
 	private Reward defaultReward;
 	
-	public PostEconomyManager(Plugin p,FileConfiguration config){
-		List<String> l = config.getStringList("economy.reward"); 
+	public PostEconomyManager(Plugin p){
+		List<String> l = Config.getStringList(ConfigItems.ECONOMY_REWARD); 
 		for(int i = 0;i<l.size();i++){
 			String[] args = l.get(i).split("|");
 			if(args.length == 3) {
